@@ -3,7 +3,7 @@ name: PR Reporter
 on:
   schedule:
     # Run this every day at 9am and 1pm
-    - cron:  '41 6,13 * * *'
+    - cron:  '*/5 6-13 * * *'
 
 jobs:
   pr-reporter-slack:
