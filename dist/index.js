@@ -9122,6 +9122,7 @@ function run() {
     }`, Object.assign(Object.assign({}, github.context.repo), { headers: {
                     accept: `application/vnd.github.shadow-cat-preview+json`
                 } }));
+            core.debug('Successful GraphQL response');
             const pullRequests = response && response.repository.pullRequests.nodes;
             const repoName = response && response.repository.nameWithOwner;
             const readyPRS = pullRequests.filter((pr) => !pr.isDraft && !pr.title.toLowerCase().startsWith('[wip]'));
@@ -9140,7 +9141,11 @@ function run() {
                 text = text.concat(`\n👉 <${pr.url}|${pr.title}> | ${status} | ${timeago_js_1.format(pr.createdAt, 'en_US')}`);
             });
             const message = {
-                blocks: [
+                username: 'PR Reporter',
+                icon_emoji: ':rolled_up_newspaper:'
+            };
+            if (readyPRS.length > 0) {
+                message.blocks = [
                     {
                         type: "section",
                         text: {
@@ -9167,11 +9172,13 @@ function run() {
                             }
                         ]
                     }
-                ],
-                username: 'PR Reporter',
-                icon_emoji: ':rolled_up_newspaper:'
-            };
-            return yield axios_1.default.post(slackWebhook, message);
+                ];
+            }
+            else {
+                message.text = '👍 No PRs waiting for review!';
+            }
+            yield axios_1.default.post(slackWebhook, message);
+            core.debug('Successful Slack webhook response');
         }
         catch (error) {
             core.setFailed(error.message);

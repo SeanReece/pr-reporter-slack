@@ -54,6 +54,8 @@ async function run(): Promise<void> {
       }
     )
 
+    core.debug('Successful GraphQL response')
+
     const pullRequests = response && response.repository.pullRequests.nodes
     const repoName = response && response.repository.nameWithOwner
 
@@ -73,8 +75,13 @@ async function run(): Promise<void> {
       text = text.concat(`\n👉 <${pr.url}|${pr.title}> | ${status} | ${format(pr.createdAt, 'en_US')}`)
     })
 
-    const message = {
-      blocks: [
+    const message: any = {
+      username: 'PR Reporter',
+      icon_emoji: ':rolled_up_newspaper:' 
+    }
+
+    if (readyPRS.length > 0) {
+      message.blocks = [
         {
           type: "section",
           text: {
@@ -101,12 +108,13 @@ async function run(): Promise<void> {
             }
           ]
         }
-      ],
-      username: 'PR Reporter',
-      icon_emoji: ':rolled_up_newspaper:' 
+      ]
+    } else {
+      message.text = '👍 No PRs waiting for review!'
     }
 
-    return await axios.post(slackWebhook, message)
+    await axios.post(slackWebhook, message)
+    core.debug('Successful Slack webhook response')
   } catch (error) {
     core.setFailed(error.message)
   }
