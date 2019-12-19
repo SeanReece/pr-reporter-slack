@@ -75,13 +75,14 @@ async function run(): Promise<void> {
       text = text.concat(`\n👉 <${pr.url}|${pr.title}> | ${status} | ${format(pr.createdAt, 'en_US')}`)
     })
 
-    const message: any = {
-      username: 'PR Reporter',
-      icon_emoji: ':rolled_up_newspaper:' 
+    if (readyPRS.length === 0) {
+      text = '👍 No PRs waiting for review!'
     }
 
-    if (readyPRS.length > 0) {
-      message.blocks = [
+    const message: any = {
+      username: 'PR Reporter',
+      icon_emoji: ':rolled_up_newspaper:',
+      blocks: [
         {
           type: "section",
           text: {
@@ -109,8 +110,6 @@ async function run(): Promise<void> {
           ]
         }
       ]
-    } else {
-      message.text = '👍 No PRs waiting for review!'
     }
 
     await axios.post(slackWebhook, message)
