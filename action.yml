@@ -12,7 +12,7 @@ runs:
   using: 'node12'
   main: 'dist/index.js'
 branding:
-  icon: 'slack'
+  icon: 'message-square'
   color: 'yellow'
 
   
