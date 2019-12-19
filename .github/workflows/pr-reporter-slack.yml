@@ -3,14 +3,15 @@ name: PR Reporter
 on:
   schedule:
     # Run this every day at 9am and 1pm
-    - cron:  '*/5 * * * *'
+    - cron:  '0 13,18 * * *'
+  push:
 
 jobs:
   pr-reporter-slack:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: ./
+    - uses: SeanReece/pr-reporter-slack@v1
       with: 
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
