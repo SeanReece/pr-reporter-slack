@@ -28,7 +28,8 @@ Copy and paste the following snippet into your .yml file.
 ```yml
 name: PR Reporter
 
-schedule:
+on:
+  schedule:
     # Run this every day at 9am and 1pm
     - cron:  '0 9,13 * * *'
 
