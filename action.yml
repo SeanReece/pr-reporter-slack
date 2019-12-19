@@ -5,11 +5,9 @@ inputs:
   repo-token:
     description: 'Token for the repo. Can be passed in using {{ secrets.GITHUB_TOKEN }}'
     required: true
-    default: '${{ secrets.GITHUB_TOKEN }}'
   slack-webhook:
-    description: 'Your slack webhook URL. Used to send PR reporter notifications.'
+    description: 'Your slack webhook URL. Used to send PR reporter notifications. Recommended ${{ secrets.SLACK_WEBHOOK }}'
     required: true
-    default: '${{ secrets.SLACK_WEBHOOK }}'
 runs:
   using: 'node12'
   main: 'dist/index.js'
