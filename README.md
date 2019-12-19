@@ -4,27 +4,25 @@
 
 # PR Reporter Slack
 
-<p align="center">
-  <span style="font-size: 128px;">🗞</span>
-</p>
-
-A github action that will bug you in slack when you have pull requests ready for review.
+A github action that sends you slack messages when you have pull requests ready for review.
 
 <p align="center">
   <img src="./slack.png" alt="PR Reporter logo"/>
 </p>
 
-## Installation
+## Usage
 
-### Create Slack webhook
-Add a incoming slack webhook here: https://qlikdev.slack.com/apps/new/A0F7XDUAZ-incoming-webhooks
+### 1. Create Slack webhook
+Add a incoming slack webhook by following the directions here: https://api.slack.com/messaging/webhooks#getting-started
 
-Choose the slack channel you'd like your messages sent to.
+PR Reporter will send messages to the slack channel you choose when setting up your webhook.
 
-### Add Slack webhook to github repo secrets
-Add a new secret in your target repo caled `SLACK_WEBHOOK` and make the value the url of the slack webhook you created earlier.
+### 2. Add Slack webhook to github repo secrets
+Add a new secret in your repo caled `SLACK_WEBHOOK` and make the value the url of the slack webhook you created earlier.
 
-### Create `.github/workflows/pr-reporter-slack.yml`
+See: https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets#creating-encrypted-secrets
+
+### 3. Create `.github/workflows/pr-reporter-slack.yml`
 Copy and paste the following snippet into your .yml file.
 
 ```yml

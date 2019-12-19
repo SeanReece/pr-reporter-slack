@@ -1,6 +1,13 @@
 name: 'pr-reporter-slack'
 description: 'Slack messages for your PRs'
 author: 'SeanReece'
+inputs:
+  repo-token:
+    description: 'Token for the repo. Can be passed in using {{ secrets.GITHUB_TOKEN }}'
+    required: true
+  slack-webhook:
+    description: 'Your slack webhook URL. Used to send PR reporter notifications.'
+    required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'
