@@ -4,7 +4,6 @@ on:
   schedule:
     # Run this every day at 9am
     - cron:  '0 14 * * *'
-  push:
 
 jobs:
   pr-reporter-slack:
