@@ -1,27 +1,127 @@
-import {wait} from '../src/wait'
-import * as process from 'process'
-import * as cp from 'child_process'
-import * as path from 'path'
+import * as core from '@actions/core'
+import axios from 'axios'
+import * as github from '../src/github'
+import { formatSlackMessage, formatSinglePR, BlockMessage } from '../src/message'
+import prReporter from '../src/prReporter'
 
-test('throws invalid number', async () => {
-  const input = parseInt('foo', 10)
-  await expect(wait(input)).rejects.toThrow('milliseconds not a number')
-})
+jest.mock('@actions/core')
+jest.mock('../src/github')
+jest.mock('../src/message')
+jest.mock('axios')
 
-test('wait 500 ms', async () => {
-  const start = new Date()
-  await wait(500)
-  const end = new Date()
-  var delta = Math.abs(end.getTime() - start.getTime())
-  expect(delta).toBeGreaterThan(450)
-})
-
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_MILLISECONDS'] = '500'
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecSyncOptions = {
-    env: process.env
+const mockToken = '123'
+const mockSlackWebhook = 'http://test'
+const mockResponse: github.GraphQLResponse = {
+  "nameWithOwner": "SeanReece/pr-reporter-slack",
+  "pullRequests": {
+    "nodes": [
+      {
+        "id": "MDExOlB1bGxSZXF1ZXN0Mzg4ODU2OTU0",
+        "title": "Bump acorn from 5.7.3 to 5.7.4",
+        "url": "https://github.com/SeanReece/pr-reporter-slack/pull/9",
+        "createdAt": "2020-03-15T22:40:33Z",
+        "isDraft": false,
+        "reviews": {
+          "totalCount": 1,
+          "nodes": [
+            {
+              "state": "APPROVED"
+            }
+          ]
+        },
+        "comments": {
+          "totalCount": 0
+        },
+        "headRef": {
+          "name": "dependabot/npm_and_yarn/acorn-5.7.4"
+        },
+        "commits": {
+          "nodes": [
+            {
+              "commit": {
+                "status": null
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "totalCount": 1
   }
-  console.log(cp.execSync(`node ${ip}`, options).toString())
+}
+
+const mockBlockMessage: BlockMessage = {
+  username: 'PR Reporter',
+  icon_emoji: ':rolled_up_newspaper:',
+  blocks: [{
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: `\n*SeanReece/pr-reporter-slack* has 5 PRs ready for review`,
+    },
+  }]
+}
+
+test('Queries for PRs and sends to slack webhook', async () => {
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockToken);
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockSlackWebhook);
+  (core.getInput as jest.Mock).mockImplementationOnce(() => 'true');
+  (github.queryPRs as jest.Mock).mockResolvedValue(mockResponse);
+  (formatSinglePR as jest.Mock).mockReturnValue('test');
+  (formatSlackMessage as jest.Mock).mockReturnValue(mockBlockMessage);
+  await prReporter()
+  expect(github.queryPRs).toHaveBeenCalledWith(mockToken)
+  expect(formatSinglePR).toHaveBeenCalledTimes(1)
+  expect(formatSinglePR).toHaveBeenCalledWith(mockResponse.pullRequests.nodes[0])
+  expect(formatSlackMessage).toHaveBeenCalledWith(mockResponse.nameWithOwner, 'test', 1, 1)
+  expect(axios.post).toHaveBeenCalledWith(mockSlackWebhook, mockBlockMessage)
+})
+
+test('Queries for PRs and sends empty message to slack webhook', async () => {
+  const emptyResponse = {
+    ...mockResponse,
+    pullRequests: {
+      nodes: []
+    }
+  };
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockToken);
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockSlackWebhook);
+  (core.getInput as jest.Mock).mockImplementationOnce(() => 'true');
+  (github.queryPRs as jest.Mock).mockResolvedValue(emptyResponse);
+  (formatSinglePR as jest.Mock).mockReturnValue('test');
+  (formatSlackMessage as jest.Mock).mockReturnValue(mockBlockMessage);
+  await prReporter()
+  expect(github.queryPRs).toHaveBeenCalledWith(mockToken)
+  expect(formatSinglePR).toHaveBeenCalledTimes(0)
+  expect(formatSlackMessage).toHaveBeenCalledWith(mockResponse.nameWithOwner, '👍 No PRs waiting for review!', 0, 0)
+  expect(axios.post).toHaveBeenCalledWith(mockSlackWebhook, mockBlockMessage)
+})
+
+test('Queries for PRs and does not send message when notify-empty = false', async () => {
+  const emptyResponse = {
+    ...mockResponse,
+    pullRequests: {
+      nodes: []
+    }
+  };
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockToken);
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockSlackWebhook);
+  (core.getInput as jest.Mock).mockImplementationOnce(() => 'false');
+  (github.queryPRs as jest.Mock).mockResolvedValue(emptyResponse);
+  (formatSinglePR as jest.Mock).mockReturnValue('test');
+  (formatSlackMessage as jest.Mock).mockReturnValue(mockBlockMessage);
+  await prReporter()
+  expect(github.queryPRs).toHaveBeenCalledWith(mockToken)
+  expect(formatSinglePR).toHaveBeenCalledTimes(0)
+  expect(formatSlackMessage).toHaveBeenCalledTimes(0)
+  expect(axios.post).toHaveBeenCalledTimes(0)
+})
+
+test('Sets action as failed when query fails', async () => {
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockToken);
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockSlackWebhook);
+  (github.queryPRs as jest.Mock).mockRejectedValue(new Error('bad'));
+  await prReporter()
+  expect(github.queryPRs).toHaveBeenCalledWith(mockToken)
+  expect(core.setFailed).toHaveBeenCalledWith('bad')
 })

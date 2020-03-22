@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`performs query 1`] = `
+Array [
+  "query prs($owner: String!, $repo: String!) {
+        repository(owner:$owner, name:$repo) {
+          nameWithOwner,
+          pullRequests(first: 100, states: OPEN) {
+            nodes {
+              id
+              title
+              url
+              createdAt
+              isDraft
+              reviews(first: 10, states: [CHANGES_REQUESTED, APPROVED]) {
+                totalCount
+                nodes {
+                  state
+                }
+              }
+              comments {
+                totalCount
+              }
+              headRef {
+                name
+              }
+              commits(first: 10) {
+                nodes {
+                  commit {
+                    status {
+                      id
+                      state
+                    }
+                  }
+                }
+              }
+            }
+            totalCount
+          }
+        }
+      }",
+  Object {
+    "0": "S",
+    "1": "e",
+    "10": "p",
+    "11": "r",
+    "12": "-",
+    "13": "r",
+    "14": "e",
+    "15": "p",
+    "16": "o",
+    "17": "r",
+    "18": "t",
+    "19": "e",
+    "2": "a",
+    "20": "r",
+    "21": "-",
+    "22": "s",
+    "23": "l",
+    "24": "a",
+    "25": "c",
+    "26": "k",
+    "3": "n",
+    "4": "R",
+    "5": "e",
+    "6": "e",
+    "7": "c",
+    "8": "e",
+    "9": "/",
+    "headers": Object {
+      "accept": "application/vnd.github.shadow-cat-preview+json",
+    },
+  },
+]
+`;
