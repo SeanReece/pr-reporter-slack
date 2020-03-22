@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`formats single PR 1`] = `
+"
+👉 <https://github.com/SeanReece/pr-reporter-slack/pull/9|Bump acorn from 5.7.3 to 5.7.4> | *1 approvals* | 6 days ago"
+`;
+
+exports[`formats slack message 1`] = `
+Object {
+  "blocks": Array [
+    Object {
+      "text": Object {
+        "text": "
+*SeanReece/pr-reporter-slack* has 1 PRs ready for review",
+        "type": "mrkdwn",
+      },
+      "type": "section",
+    },
+    Object {
+      "type": "divider",
+    },
+    Object {
+      "text": Object {
+        "text": "
+👉 <https://github.com/SeanReece/pr-reporter-slack/pull/9|Bump acorn from 5.7.3 to 5.7.4> | *1 approvals* | 6 days ago",
+        "type": "mrkdwn",
+      },
+      "type": "section",
+    },
+    Object {
+      "elements": Array [
+        Object {
+          "text": "You have *2* open PRs and *1* ready for review",
+          "type": "mrkdwn",
+        },
+      ],
+      "type": "context",
+    },
+    Object {
+      "type": "divider",
+    },
+  ],
+  "icon_emoji": ":rolled_up_newspaper:",
+  "username": "PR Reporter",
+}
+`;
