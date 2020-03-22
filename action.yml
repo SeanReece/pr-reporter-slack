@@ -8,6 +8,9 @@ inputs:
   slack-webhook:
     description: 'Your slack webhook URL. Used to send PR reporter notifications.'
     required: true
+  notify-empty:
+    description: 'Should a message be sent when there are no PRs ready?'
+    default: 'true'
 runs:
   using: 'node12'
   main: 'dist/index.js'
