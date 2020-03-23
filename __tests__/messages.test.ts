@@ -1,6 +1,13 @@
 import * as core from '@actions/core'
+import { format } from 'timeago.js'
 import { formatSinglePR, formatSlackMessage } from '../src/message'
 import { PullRequest } from '../src/github'
+
+jest.mock('timeago.js')
+
+beforeEach(() => {
+  (format as jest.Mock).mockImplementationOnce(() => '6 days ago')
+})
 
 const mockPR: PullRequest = {
   id: 'MDExOlB1bGxSZXF1ZXN0Mzg4ODU2OTU0',
@@ -31,6 +38,13 @@ const mockPR: PullRequest = {
       },
     ],
   },
+  labels: {
+    nodes: [
+      {
+        name: 'stuff'
+      }
+    ]
+  }
 }
 
 test('formats single PR', () => {

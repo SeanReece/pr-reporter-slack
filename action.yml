@@ -11,6 +11,8 @@ inputs:
   notify-empty:
     description: 'Should a message be sent when there are no PRs ready?'
     default: 'true'
+  exclude-labels:
+    description: 'Comma seperated list of labels to exclude from PR reports'
 runs:
   using: 'node12'
   main: 'dist/index.js'

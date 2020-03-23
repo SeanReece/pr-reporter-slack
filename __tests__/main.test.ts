@@ -43,10 +43,46 @@ const mockResponse: github.GraphQLResponse = {
               }
             }
           ]
+        },
+        "labels": {
+          "nodes": [
+            {
+              "name": 'bug'
+            }
+          ]
+        }
+      },
+      {
+        "id": "MDExOlB1bGxSZXF1ZXN0Mzg4ODU2OTU1",
+        "title": "Make stuff awesome",
+        "url": "https://github.com/SeanReece/pr-reporter-slack/pull/10",
+        "createdAt": "2020-03-16T22:45:33Z",
+        "isDraft": false,
+        "reviews": {
+          "totalCount": 0,
+          "nodes": []
+        },
+        "comments": {
+          "totalCount": 0
+        },
+        "headRef": {
+          "name": "stuff"
+        },
+        "commits": {
+          "nodes": [
+            {
+              "commit": {
+                "status": null
+              }
+            }
+          ]
+        },
+        "labels": {
+          "nodes": []
         }
       }
     ],
-    "totalCount": 1
+    "totalCount": 2
   }
 }
 
@@ -71,9 +107,10 @@ test('Queries for PRs and sends to slack webhook', async () => {
   (formatSlackMessage as jest.Mock).mockReturnValue(mockBlockMessage);
   await prReporter()
   expect(github.queryPRs).toHaveBeenCalledWith(mockToken)
-  expect(formatSinglePR).toHaveBeenCalledTimes(1)
+  expect(formatSinglePR).toHaveBeenCalledTimes(2)
   expect(formatSinglePR).toHaveBeenCalledWith(mockResponse.pullRequests.nodes[0])
-  expect(formatSlackMessage).toHaveBeenCalledWith(mockResponse.nameWithOwner, 'test', 1, 1)
+  expect(formatSinglePR).toHaveBeenCalledWith(mockResponse.pullRequests.nodes[1])
+  expect(formatSlackMessage).toHaveBeenCalledWith(mockResponse.nameWithOwner, 'testtest', 2, 2)
   expect(axios.post).toHaveBeenCalledWith(mockSlackWebhook, mockBlockMessage)
 })
 
@@ -115,6 +152,22 @@ test('Queries for PRs and does not send message when notify-empty = false', asyn
   expect(formatSinglePR).toHaveBeenCalledTimes(0)
   expect(formatSlackMessage).toHaveBeenCalledTimes(0)
   expect(axios.post).toHaveBeenCalledTimes(0)
+})
+
+test('Excludes correct PRs when exlude-labels is set', async () => {
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockToken);
+  (core.getInput as jest.Mock).mockImplementationOnce(() => mockSlackWebhook);
+  (core.getInput as jest.Mock).mockImplementationOnce(() => 'false');
+  (core.getInput as jest.Mock).mockImplementationOnce(() => 'bug,stuff');
+  (github.queryPRs as jest.Mock).mockResolvedValue(mockResponse);
+  (formatSinglePR as jest.Mock).mockReturnValue('test');
+  (formatSlackMessage as jest.Mock).mockReturnValue(mockBlockMessage);
+  await prReporter()
+  expect(github.queryPRs).toHaveBeenCalledWith(mockToken)
+  expect(formatSinglePR).toHaveBeenCalledTimes(1)
+  expect(formatSinglePR).toHaveBeenCalledWith(mockResponse.pullRequests.nodes[1])
+  expect(formatSlackMessage).toHaveBeenCalledWith(mockResponse.nameWithOwner, 'test', 2, 1)
+  expect(axios.post).toHaveBeenCalledWith(mockSlackWebhook, mockBlockMessage)
 })
 
 test('Sets action as failed when query fails', async () => {

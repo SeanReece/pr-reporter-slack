@@ -9,6 +9,7 @@ export default async function run(): Promise<void> {
     const token: string = core.getInput('repo-token')
     const slackWebhook: string = core.getInput('slack-webhook')
     const notifyEmpty: boolean = core.getInput('notify-empty') === 'true'
+    const excludeLabels: string[] = core.getInput('exclude-labels')?.split(',')
 
     const response = await github.queryPRs(token)
 
@@ -17,10 +18,14 @@ export default async function run(): Promise<void> {
     const pullRequests = response?.pullRequests.nodes
     const repoName = response?.nameWithOwner
 
-    const readyPRS = pullRequests.filter(
-      (pr: github.PullRequest) =>
-        !pr.isDraft && !pr.title.toLowerCase().startsWith('[wip]'),
-    )
+    const readyPRS = pullRequests.filter((pr: github.PullRequest) => {
+      const inProgress =
+        pr.isDraft || pr.title.toLowerCase().startsWith('[wip]')
+      const excluded =
+        excludeLabels &&
+        pr.labels.nodes.some(label => excludeLabels.includes(label.name))
+      return !inProgress && !excluded
+    })
 
     let text = ''
 
