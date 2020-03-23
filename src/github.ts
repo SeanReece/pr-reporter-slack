@@ -22,11 +22,13 @@ export interface PullRequest {
   isDraft: boolean
   reviews: {
     totalCount: number
-    nodes: [
-      {
-        state: keyof typeof ReviewStates
-      },
-    ]
+    nodes:
+      | [
+          {
+            state: keyof typeof ReviewStates
+          },
+        ]
+      | []
   }
   comments: {
     totalCount: number
@@ -36,6 +38,15 @@ export interface PullRequest {
   }
   commits: {
     nodes: object[]
+  }
+  labels: {
+    nodes:
+      | [
+          {
+            name: string
+          },
+        ]
+      | []
   }
 }
 
@@ -74,6 +85,11 @@ export async function queryPRs(token: string): Promise<GraphQLResponse> {
                       state
                     }
                   }
+                }
+              }
+              labels(first: 10) {
+                nodes {
+                  name
                 }
               }
             }
