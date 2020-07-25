@@ -1,6 +1,7 @@
 import { format } from 'timeago.js'
+import * as core from '@actions/core'
 import * as github from './github'
-
+import { differenceInCalendarDays } from 'date-fns'
 export interface BlockMessage {
   username: string
   icon_emoji: string
@@ -8,7 +9,14 @@ export interface BlockMessage {
 }
 
 export function formatSinglePR(pr: github.PullRequest): string {
+  const stalePrDays: string = core.getInput('stale-pr') // Number of days before marking a PR as stale
   let status = ''
+  let stalePr: boolean
+
+  const createdAt = new Date(pr.createdAt)
+  if (differenceInCalendarDays(createdAt, Date.now()) <= (stalePrDays || -15)) {
+    stalePr = true
+  }
   if (pr.reviews.totalCount === 0) {
     status = '*No reviews*'
   } else if (
@@ -20,10 +28,15 @@ export function formatSinglePR(pr: github.PullRequest): string {
   } else {
     status = `*${pr.reviews.totalCount} approvals*`
   }
-  return `\n👉 <${pr.url}|${pr.title}> | ${status} | ${format(
-    pr.createdAt,
-    'en_US',
-  )}`
+
+  const dateString = (): string => {
+    if (stalePr) {
+      return `🚨 ${format(pr.createdAt, 'en_US')} 🚨`
+    }
+    return `${format(pr.createdAt, 'en_US')}`
+  }
+
+  return `\n👉 <${pr.url}|${pr.title}> | ${status} | ${dateString()}`
 }
 
 export function formatSlackMessage(

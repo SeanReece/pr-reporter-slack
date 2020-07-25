@@ -1,12 +1,14 @@
-import * as core from '@actions/core'
 import { format } from 'timeago.js'
 import { formatSinglePR, formatSlackMessage } from '../src/message'
 import { PullRequest } from '../src/github'
+import { set as setMockDate } from 'mockdate'
 
 jest.mock('timeago.js')
 
 beforeEach(() => {
-  (format as jest.Mock).mockImplementationOnce(() => '6 days ago')
+  jest.clearAllMocks()
+  setMockDate('2020-03-20T22:40:33Z') // need this semicolon?
+  ;(format as jest.Mock).mockImplementationOnce(() => '6 days ago')
 })
 
 const mockPR: PullRequest = {
@@ -41,10 +43,10 @@ const mockPR: PullRequest = {
   labels: {
     nodes: [
       {
-        name: 'stuff'
-      }
-    ]
-  }
+        name: 'stuff',
+      },
+    ],
+  },
 }
 
 test('formats single PR', () => {
@@ -54,6 +56,24 @@ test('formats single PR', () => {
 
 test('formats slack message', () => {
   const formattedPR = formatSinglePR(mockPR)
-  const formattedSlackMessage = formatSlackMessage('SeanReece/pr-reporter-slack', formattedPR, 2, 1)
+  const formattedSlackMessage = formatSlackMessage(
+    'SeanReece/pr-reporter-slack',
+    formattedPR,
+    2,
+    1,
+  )
+  expect(formattedSlackMessage).toMatchSnapshot()
+})
+
+test('stale PR', () => {
+  const stalePr = { ...mockPR, createdAt: '2020-03-01T22:40:33Z' }
+
+  const formattedPR = formatSinglePR(stalePr)
+  const formattedSlackMessage = formatSlackMessage(
+    'SeanReece/pr-reporter-slack',
+    formattedPR,
+    2,
+    1,
+  )
   expect(formattedSlackMessage).toMatchSnapshot()
 })
