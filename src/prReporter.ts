@@ -2,14 +2,17 @@ import * as core from '@actions/core'
 import axios from 'axios'
 import * as github from './github'
 import { formatSlackMessage, formatSinglePR } from './message'
+import { version } from '../package.json'
 
 export default async function run(): Promise<void> {
   try {
-    // console.log(core)
+    console.log(core)
     const token: string = core.getInput('repo-token')
     const slackWebhook: string = core.getInput('slack-webhook')
     const notifyEmpty: boolean = core.getInput('notify-empty') === 'true'
     const excludeLabels: string[] = core.getInput('exclude-labels')?.split(',')
+    console.log(version)
+    core.debug(`VERSION: ${version}`)
 
     const response = await github.queryPRs(token)
 
