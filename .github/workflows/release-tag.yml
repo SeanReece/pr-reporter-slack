@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - run: git config user.name 'Update Release Tag'
+    - run: git config user.email 'buildbot@email.com'
     - run: git push origin :refs/tags/v1
     - run: git tag -fa v1
     - run: git push origin master --tags
