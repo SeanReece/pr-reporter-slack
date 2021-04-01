@@ -1,0 +1,16 @@
+name: Tag Release v1
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  tag-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: git push origin :refs/tags/v1
+    - run: git tag -fa v1
+    - run: git push origin master --tags
+    
