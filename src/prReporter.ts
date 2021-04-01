@@ -6,7 +6,7 @@ import { formatSlackMessage, formatSinglePR } from './message'
 
 export default async function run(): Promise<void> {
   try {
-    core.debug('LOGGING')
+    core.debug('LOGGING------------------------------------------')
     core.debug(JSON.stringify(core))
     const token: string = core.getInput('repo-token')
     const slackWebhook: string = core.getInput('slack-webhook')
