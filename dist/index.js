@@ -404,7 +404,14 @@ module.exports._enoent = enoent;
  * Contract: i@hust.cc
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var SEC_ARRAY = [60, 60, 24, 7, 365 / 7 / 12, 12];
+var SEC_ARRAY = [
+    60,
+    60,
+    24,
+    7,
+    365 / 7 / 12,
+    12,
+];
 /**
  * format Date / string / timestamp to timestamp
  * @param input
@@ -435,34 +442,59 @@ exports.toDate = toDate;
  * @returns
  */
 function formatDiff(diff, localeFunc) {
-    // if locale is not exist, use defaultLocale.
-    // if defaultLocale is not exist, use build-in `en`.
-    // be sure of no error when locale is not exist.
-    var agoIn = diff < 0 ? 1 : 0; // time in or time ago
+    /**
+     * if locale is not exist, use defaultLocale.
+     * if defaultLocale is not exist, use build-in `en`.
+     * be sure of no error when locale is not exist.
+     *
+     * If `time in`, then 1
+     * If `time ago`, then 0
+     */
+    var agoIn = diff < 0 ? 1 : 0;
+    /**
+     * Get absolute value of number (|diff| is non-negative) value of x
+     * |diff| = diff if diff is positive
+     * |diff| = -diff if diff is negative
+     * |0| = 0
+     */
     diff = Math.abs(diff);
+    /**
+     * Time in seconds
+     */
     var totalSec = diff;
+    /**
+     * Unit of time
+     */
     var idx = 0;
     for (; diff >= SEC_ARRAY[idx] && idx < SEC_ARRAY.length; idx++) {
         diff /= SEC_ARRAY[idx];
     }
-    // Math.floor
-    diff = ~~diff;
+    /**
+     * Math.floor() is alternative of ~~
+     *
+     * The differences and bugs:
+     * Math.floor(3.7) -> 4 but ~~3.7 -> 3
+     * Math.floor(1559125440000.6) -> 1559125440000 but ~~1559125440000.6 -> 52311552
+     *
+     * More information about the performance of algebraic:
+     * https://www.youtube.com/watch?v=65-RbBwZQdU
+     */
+    diff = Math.floor(diff);
     idx *= 2;
     if (diff > (idx === 0 ? 9 : 1))
         idx += 1;
-    // @ts-ignore
-    return localeFunc(diff, idx, totalSec)[agoIn].replace('%s', diff);
+    return localeFunc(diff, idx, totalSec)[agoIn].replace('%s', diff.toString());
 }
 exports.formatDiff = formatDiff;
 /**
  * calculate the diff second between date to be formatted an now date.
  * @param date
  * @param relativeDate
- * @returns
+ * @returns {number}
  */
 function diffSec(date, relativeDate) {
-    relativeDate = relativeDate ? toDate(relativeDate) : new Date();
-    return (+relativeDate - +toDate(date)) / 1000;
+    var relDate = relativeDate ? toDate(relativeDate) : new Date();
+    return (+relDate - +toDate(date)) / 1000;
 }
 exports.diffSec = diffSec;
 /**
@@ -3972,7 +4004,10 @@ function run(node, date, localeFunc, opts) {
     TIMER_POOL[tid] = 0;
     dom_1.setTimerId(node, tid);
 }
-// 取消一个 node 的实时渲染
+/**
+ * cancel a timer or all timers
+ * @param node - node hosting the time string
+ */
 function cancel(node) {
     // cancel one
     if (node)
@@ -4062,7 +4097,7 @@ var EN_US = ['second', 'minute', 'hour', 'day', 'week', 'month', 'year'];
 function default_1(diff, idx) {
     if (idx === 0)
         return ['just now', 'right now'];
-    var unit = EN_US[~~(idx / 2)];
+    var unit = EN_US[Math.floor(idx / 2)];
     if (diff > 1)
         unit += 's';
     return [diff + " " + unit + " ago", "in " + diff + " " + unit];
