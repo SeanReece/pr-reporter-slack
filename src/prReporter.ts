@@ -6,6 +6,7 @@ import { version } from '../package.json'
 
 export default async function run(): Promise<void> {
   try {
+    console.log('LOGGING')
     console.log(core)
     const token: string = core.getInput('repo-token')
     const slackWebhook: string = core.getInput('slack-webhook')
