@@ -1,22 +1,24 @@
 name: "build-test"
-on: # rebuild any PRs and main branch changes
-  pull_request:
+on:
   push:
-    branches:
+    branches-ignore:
       - master
-      - 'releases/*'
 
 jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - run: |
         npm install
         npm run all
+    - run: git add dist/index.js
+    - run: git config user.name 'Update dist'
+    - run: git config user.email 'buildbot@email.com'
+    - run: git commit -m "Update dist" && git push || true
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - run: npm install
     - run: npm test
