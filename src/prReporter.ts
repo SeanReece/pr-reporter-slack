@@ -5,7 +5,6 @@ import { formatSlackMessage, formatSinglePR } from './message'
 
 export default async function run(): Promise<void> {
   try {
-    // console.log(core)
     const token: string = core.getInput('repo-token')
     const slackWebhook: string = core.getInput('slack-webhook')
     const notifyEmpty: boolean = core.getInput('notify-empty') === 'true'

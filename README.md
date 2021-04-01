@@ -37,7 +37,7 @@ jobs:
   pr-reporter-slack:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - uses: SeanReece/pr-reporter-slack@v1
       with: 
         repo-token: ${{ secrets.GITHUB_TOKEN }}
