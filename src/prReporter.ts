@@ -12,6 +12,7 @@ export default async function run(): Promise<void> {
     const notifyEmpty: boolean = core.getInput('notify-empty') === 'true'
     const excludeLabels: string[] = core.getInput('exclude-labels')?.split(',')
     console.log(version)
+    console.log(excludeLabels)
     core.debug(`VERSION: ${version}`)
 
     const response = await github.queryPRs(token)
