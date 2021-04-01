@@ -7973,7 +7973,6 @@ const core = __importStar(__webpack_require__(470));
 const axios_1 = __importDefault(__webpack_require__(53));
 const github = __importStar(__webpack_require__(824));
 const message_1 = __webpack_require__(904);
-// import { version } from '../package.json'
 function run() {
     var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
@@ -7982,7 +7981,6 @@ function run() {
             const slackWebhook = core.getInput('slack-webhook');
             const notifyEmpty = core.getInput('notify-empty') === 'true';
             const excludeLabels = (_a = core.getInput('exclude-labels')) === null || _a === void 0 ? void 0 : _a.split(',');
-            core.debug(JSON.stringify(excludeLabels));
             const response = yield github.queryPRs(token);
             core.debug('Successful GraphQL response');
             const pullRequests = (_b = response) === null || _b === void 0 ? void 0 : _b.pullRequests.nodes;
