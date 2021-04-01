@@ -1,5 +1,8 @@
 name: "build-test"
-on: push
+on:
+  push:
+    branches-ignore:
+      - master
 
 jobs:
   build: # make sure build/ci work properly
