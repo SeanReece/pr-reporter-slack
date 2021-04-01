@@ -6,14 +6,14 @@ import { version } from '../package.json'
 
 export default async function run(): Promise<void> {
   try {
-    console.log('LOGGING')
-    console.log(core)
+    core.debug('LOGGING')
+    core.debug(JSON.stringify(core))
     const token: string = core.getInput('repo-token')
     const slackWebhook: string = core.getInput('slack-webhook')
     const notifyEmpty: boolean = core.getInput('notify-empty') === 'true'
     const excludeLabels: string[] = core.getInput('exclude-labels')?.split(',')
-    console.log(version)
-    console.log(excludeLabels)
+    core.debug(version)
+    core.debug(JSON.stringify(excludeLabels))
     core.debug(`VERSION: ${version}`)
 
     const response = await github.queryPRs(token)
