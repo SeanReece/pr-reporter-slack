@@ -23,7 +23,7 @@ export default async function run(): Promise<void> {
       core.debug(JSON.stringify(pr.labels.nodes))
       return excluded
     }).length
-    core.debug(`Excluded ${excludedCount}`)
+    core.debug(`Excluded-- ${excludedCount}`)
     const readyPRS = pullRequests.filter((pr: github.PullRequest) => {
       const inProgress =
         pr.isDraft || pr.title.toLowerCase().startsWith('[wip]')
