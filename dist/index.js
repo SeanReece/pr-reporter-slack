@@ -8108,7 +8108,7 @@ function run() {
                 core.debug(JSON.stringify(pr.labels.nodes));
                 return excluded;
             }).length;
-            core.debug(`Excluded ${excludedCount}`);
+            core.debug(`Excluded-- ${excludedCount}`);
             const readyPRS = pullRequests.filter((pr) => {
                 const inProgress = pr.isDraft || pr.title.toLowerCase().startsWith('[wip]');
                 const excluded = excludeLabels &&
