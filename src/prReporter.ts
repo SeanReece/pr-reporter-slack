@@ -46,7 +46,7 @@ export default async function run(): Promise<void> {
       pullRequests.length,
       readyPRS.length,
     )
-
+    core.debug(JSON.stringify(message))
     await axios.post(slackWebhook, message)
     core.debug('Successful Slack webhook response')
   } catch (error) {
