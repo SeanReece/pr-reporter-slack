@@ -8097,14 +8097,23 @@ function run() {
             const slackWebhook = core.getInput('slack-webhook');
             const notifyEmpty = core.getInput('notify-empty') === 'true';
             const excludeLabels = (_a = core.getInput('exclude-labels')) === null || _a === void 0 ? void 0 : _a.split(',');
+            core.debug(`Excluding: ${JSON.stringify(excludeLabels)}`);
             const response = yield github.queryPRs(token);
             core.debug('Successful GraphQL response');
             const pullRequests = (_b = response) === null || _b === void 0 ? void 0 : _b.pullRequests.nodes;
             const repoName = (_c = response) === null || _c === void 0 ? void 0 : _c.nameWithOwner;
+            const excludedCount = pullRequests.filter((pr) => {
+                const excluded = excludeLabels &&
+                    pr.labels.nodes.some(label => excludeLabels.includes(label.name));
+                core.debug(JSON.stringify(pr.labels.nodes));
+                return excluded;
+            }).length;
+            core.debug(`Excluded ${excludedCount}`);
             const readyPRS = pullRequests.filter((pr) => {
                 const inProgress = pr.isDraft || pr.title.toLowerCase().startsWith('[wip]');
                 const excluded = excludeLabels &&
                     pr.labels.nodes.some(label => excludeLabels.includes(label.name));
+                core.debug;
                 return !inProgress && !excluded;
             });
             let text = '';
