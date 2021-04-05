@@ -8120,6 +8120,7 @@ function run() {
                 text = text.concat(message_1.formatSinglePR(pr));
             }
             const message = message_1.formatSlackMessage(repoName, text, pullRequests.length, readyPRS.length);
+            core.debug(JSON.stringify(message));
             yield axios_1.default.post(slackWebhook, message);
             core.debug('Successful Slack webhook response');
         }
