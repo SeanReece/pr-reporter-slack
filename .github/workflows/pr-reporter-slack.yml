@@ -12,4 +12,4 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
         notify-empty: 'false'
-        exclude-labels: 'ignore'
+        exclude-labels: 'dependencies'
