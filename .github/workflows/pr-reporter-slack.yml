@@ -1,9 +1,6 @@
 name: PR Reporter
 
-on:
-  schedule:
-    # Run this every day at 9am
-    - cron:  '0 14 * * *'
+on: push
 
 jobs:
   pr-reporter-slack:
@@ -15,4 +12,4 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
         notify-empty: 'false'
-        exclude-labels: 'ignore'
+        exclude-labels: 'dependencies'
