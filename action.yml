@@ -14,7 +14,7 @@ inputs:
   exclude-labels:
     description: 'Comma seperated list of labels to exclude from PR reports'
   stale-pr:
-    description: 'Should stale PR's be marked'
+    description: 'Should stale PRs be marked'
     default: 15
 runs:
   using: 'node12'
@@ -22,6 +22,3 @@ runs:
 branding:
   icon: 'message-square'
   color: 'yellow'
-
-  
-  
