@@ -15,4 +15,5 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
         notify-empty: 'false'
+        stale-pr: 15
         exclude-labels: 'ignore'
