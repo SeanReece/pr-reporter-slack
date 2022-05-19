@@ -15,7 +15,7 @@ inputs:
     description: 'Comma seperated list of labels to exclude from PR reports'
   stale-pr:
     description: 'Should stale PR's be marked'
-    default: -15
+    default: 15
 runs:
   using: 'node12'
   main: 'dist/index.js'
