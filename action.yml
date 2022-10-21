@@ -17,7 +17,7 @@ inputs:
     description: 'Should stale PRs be marked'
     default: 15
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
 branding:
   icon: 'message-square'
