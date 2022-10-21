@@ -9,7 +9,7 @@ export interface BlockMessage {
 }
 
 export function formatSinglePR(pr: github.PullRequest): string {
-  const stalePrDays: string = core.getInput('stale-pr') // Number of days before marking a PR as stale
+  let stalePrDays = Number(core.getInput('stale-pr')) // Number of days before marking a PR as stale
   if (stalePrDays > 0) stalePrDays = stalePrDays * -1
   let status = ''
   let stalePr: boolean
